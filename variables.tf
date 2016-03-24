@@ -1,9 +1,9 @@
 variable "public_key_path" {
-  description = "~/.ssh/id_rsa_mcgonagle_redhat.pub"
+  default = "~/.ssh/id_rsa_mcgonagle_redhat.pub"
 }
 
 variable "key_name" {
-  description = "terraform"
+  default = "terraform"
 }
 
 variable "aws_region" {
