@@ -1,6 +1,8 @@
 # Specify the provider and access details
 #https://www.terraform.io/docs/providers/aws/
-provider "aws" {}
+provider "aws" {
+  region = "us-east-1"
+}
 
 # Create a VPC to launch our instances into
 resource "aws_vpc" "default" {
