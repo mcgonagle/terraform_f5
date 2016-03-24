@@ -1,9 +1,6 @@
 # Specify the provider and access details
-provider "aws" {
-  access_key = ""
-  secret_key = ""
-  region = "${var.aws_region}"
-}
+#https://www.terraform.io/docs/providers/aws/
+provider "aws" {}
 
 # Create a VPC to launch our instances into
 resource "aws_vpc" "default" {
