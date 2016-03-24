@@ -32,25 +32,10 @@ resource "aws_security_group" "elb" {
   description = "Used in the terraform"
   vpc_id      = "${aws_vpc.default.id}"
 
-  # HTTP access from anywhere
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
+  # HTTPS access from anywhere
   ingress {
     from_port   = 443 
     to_port     = 443 
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # HTTP access from anywhere
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -79,14 +64,6 @@ resource "aws_security_group" "default" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # HTTP access from the VPC
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   ingress {
     from_port   = 8080
     to_port     = 8080
@@ -109,21 +86,6 @@ resource "aws_elb" "web-elb" {
 
   subnets         = ["${aws_subnet.default.id}"]
   security_groups = ["${aws_security_group.elb.id}"]
-  #instances       = ["${aws_autoscaling_group.web-asg.name}"]
-
-  listener {
-    instance_port     = 80
-    instance_protocol = "http"
-    lb_port           = 80
-    lb_protocol       = "http"
-  }
-
-  #listener {
-  #  instance_port     = 8080
-  #  instance_protocol = "http"
-  #  lb_port           = 8080
-  #  lb_protocol       = "http"
-  #}
 
   listener {
     instance_port = 8080
@@ -140,8 +102,8 @@ resource "aws_elb" "web-elb" {
     target = "HTTP:8080/ha/health-check"
     interval = 30
   }
-
 }
+
 #A key pair is used to control login access to EC2 instances
 resource "aws_key_pair" "auth" {
   key_name   = "${var.key_name}"
