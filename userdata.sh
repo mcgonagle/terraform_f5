@@ -1,6 +1,6 @@
 #!/bin/bash
 yum -y update
-yum -y install wget puppet git
+yum -y install wget puppet git unzip
 cd /etc; rm -rf puppet
 git clone https://github.com/mcgonagle/puppet.git
 puppet apply --verbose --debug --modulepath=/etc/puppet/modules /etc/puppet/manifest.conf
