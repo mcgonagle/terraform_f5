@@ -118,7 +118,7 @@ resource "aws_launch_configuration" "cjoc01-lc" {
   instance_type = "${var.instance_type}"
   # Security group
   security_groups = ["${aws_security_group.default.id}"]
-  user_data = "${file("userdata.sh")}"
+  user_data = "${file("userdata_cjoc.sh")}"
   key_name = "${var.key_name}"
   lifecycle {
       create_before_destroy = true
