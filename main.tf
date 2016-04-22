@@ -73,6 +73,13 @@ resource "aws_security_group" "default" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 8888
+    to_port     = 8888
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # outbound internet access
   egress {
     from_port   = 0
@@ -138,7 +145,6 @@ resource "aws_autoscaling_group" "cjoc01-asg" {
   desired_capacity = "${var.asg_desired}"
   force_delete = true
   launch_configuration = "${aws_launch_configuration.cjoc01-lc.id}"
-  load_balancers = ["${aws_elb.web-elb.name}"]
   #vpc_zone_identifier = ["${split(",", var.availability_zones)}"]
   vpc_zone_identifier = ["${aws_subnet.default.id}"]
   tag {
