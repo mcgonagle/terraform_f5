@@ -27,34 +27,34 @@ resource "aws_route" "internet_access" {
   gateway_id             = "${aws_internet_gateway.default.id}"
 }
 
-# Create a subnet to launch our instances into
+# Create a management subnet to launch our instances into
 resource "aws_subnet" "management" {
   vpc_id                  = "${aws_vpc.default.id}"
   cidr_block              = "10.0.0.0/24"
   map_public_ip_on_launch = true
-  availability_zone       = "us-east-1a"
+  availability_zone       = "${var.availabilty_zone}"
   tags {
     Name = "management"
   }
 }
 
-# Create a subnet to launch our instances into
+# Create an external subnet to launch our instances into
 resource "aws_subnet" "external" {
   vpc_id                  = "${aws_vpc.default.id}"
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
-  availability_zone       = "us-east-1a"
+  availability_zone       = "${var.availabilty_zone}"
   tags {
     Name = "external"
   }
 }
 
-# Create a subnet to launch our instances into
+# Create an internal subnet to launch our instances into
 resource "aws_subnet" "internal" {
   vpc_id                  = "${aws_vpc.default.id}"
   cidr_block              = "10.0.2.0/24"
   map_public_ip_on_launch = true
-  availability_zone       = "us-east-1a"
+  availability_zone       = "${var.availabilty_zone}"
   tags {
     Name = "internal"
   }
@@ -101,7 +101,7 @@ resource "aws_security_group" "allow_all" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # HTTPS access from anywhere
+  # ping access from anywhere
   ingress {
     from_port   = 8 
     to_port     = 0
@@ -126,18 +126,17 @@ resource "aws_key_pair" "auth" {
 
 resource "aws_instance" "f5" {
     ami = "${lookup(var.aws_amis, var.aws_region)}"
-    instance_type = "m4.xlarge"
+    instance_type = "${var.instance_type}"
     associate_public_ip_address = true
     private_ip = "10.0.0.21"
     availability_zone = "${aws_subnet.management.availability_zone}"
     subnet_id = "${aws_subnet.management.id}"
     security_groups = ["${aws_security_group.allow_all.id}"]
     vpc_security_group_ids = ["${aws_security_group.allow_all.id}"]
-    #user_data = "${file("cloud-config.yaml")}"
+    user_data = "${file("userdata.sh")}"
     key_name = "${var.key_name}"
     root_block_device { delete_on_termination = true }
     tags {
         Name = "f5"
-        License = "License"
     }
 }

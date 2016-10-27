@@ -11,6 +11,10 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
+variable "availabilty_zone" {
+  default = "us-east-1a"
+} 
+
 # F5 Networks Hourly BIGIP-12.1.1.1.0.196 - Better 25Mbps - built on Sep 07 20-6f7c56e1-c69f-4c47-9659-e26e27406220-ami-1d31460a.3 (ami-8f007b98)
 variable "aws_amis" {
   default = {
@@ -18,27 +22,7 @@ variable "aws_amis" {
   }
 }
 
-variable "availability_zones" {
-  default = "us-east-1b,us-east-1c,us-east-1d,us-east-1e"
-  description = "List of availability zones, use AWS CLI to find your "
-}
-
-variable "asg_min" {
-  description = "Min numbers of servers in ASG"
-  default = "1"
-}
-
-variable "asg_max" {
-  description = "Max numbers of servers in ASG"
-  default = "2"
-}
-
-variable "asg_desired" {
-  description = "Desired numbers of servers in ASG"
-  default = "1"
-}
-
 variable "instance_type" {
-  default = "t2.micro"
   description = "AWS instance type"
+  default = "m4.xlarge"
 }
