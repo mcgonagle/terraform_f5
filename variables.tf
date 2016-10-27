@@ -1,5 +1,5 @@
 variable "public_key_path" {
-  default = "~/.ssh/id_rsa_mcgonagle_redhat.pub"
+  default = "~/.ssh/id_rsa_terraform.pub"
 }
 
 variable "key_name" {
@@ -11,9 +11,10 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
+# F5 Networks Hourly BIGIP-12.1.1.1.0.196 - Better 25Mbps - built on Sep 07 20-6f7c56e1-c69f-4c47-9659-e26e27406220-ami-1d31460a.3 (ami-8f007b98)
 variable "aws_amis" {
   default = {
-    us-east-1 = "ami-2051294a"
+    us-east-1 = "ami-8f007b98"
   }
 }
 
