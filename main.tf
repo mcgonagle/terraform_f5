@@ -27,6 +27,16 @@ resource "aws_route" "internet_access" {
   gateway_id             = "${aws_internet_gateway.default.id}"
 }
 
+resource "aws_route_table_association" "route_table_external" {
+    subnet_id = "${aws_subnet.external.id}"
+    route_table_id = "${aws_vpc.default.main_route_table_id}"
+}
+
+resource "aws_route_table_association" "route_table_internal" {
+    subnet_id = "${aws_subnet.internal.id}"
+    route_table_id = "${aws_vpc.default.main_route_table_id}"
+}
+
 # Create a management subnet to launch our instances into
 resource "aws_subnet" "management" {
   vpc_id                  = "${aws_vpc.default.id}"
@@ -72,7 +82,7 @@ resource "aws_network_interface" "external" {
 
 resource "aws_network_interface" "internal" {
     subnet_id = "${aws_subnet.internal.id}"
-    private_ips = ["10.0.2.10"]
+    private_ips = ["10.0.2.10", "10.0.2.183"]
     security_groups = ["${aws_security_group.allow_all.id}"]
     attachment {
         instance = "${aws_instance.f5.id}"
@@ -80,32 +90,21 @@ resource "aws_network_interface" "internal" {
     }
 }
 
+resource "aws_eip" "eip_vip" {
+  vpc                       = true
+  network_interface         = "${aws_network_interface.internal.id}"
+  associate_with_private_ip = "10.0.2.183"
+}
+
 resource "aws_security_group" "allow_all" {
   name        = "allow_all"
   description = "Used in the terraform"
   vpc_id      = "${aws_vpc.default.id}"
 
-  # ssh access from anywhere
   ingress {
-    from_port   = 22 
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # HTTPS access from anywhere
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # ping access from anywhere
-  ingress {
-    from_port   = 8 
-    to_port     = 0
-    protocol    = "icmp"
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -128,7 +127,7 @@ resource "aws_instance" "f5" {
     ami = "${lookup(var.aws_amis, var.aws_region)}"
     instance_type = "${var.instance_type}"
     associate_public_ip_address = true
-    private_ip = "10.0.0.21"
+    private_ip = "10.0.0.10"
     availability_zone = "${aws_subnet.management.availability_zone}"
     subnet_id = "${aws_subnet.management.id}"
     security_groups = ["${aws_security_group.allow_all.id}"]
@@ -138,5 +137,22 @@ resource "aws_instance" "f5" {
     root_block_device { delete_on_termination = true }
     tags {
         Name = "f5"
+    }
+}
+
+resource "aws_instance" "ami1" {
+    ami = "ami-9be6f38c"
+    instance_type = "t2.micro"
+    associate_public_ip_address = true
+    private_ip = "10.0.2.167"
+    availability_zone = "${aws_subnet.internal.availability_zone}"
+    subnet_id = "${aws_subnet.internal.id}"
+    security_groups = ["${aws_security_group.allow_all.id}"]
+    vpc_security_group_ids = ["${aws_security_group.allow_all.id}"]
+    user_data = "${file("userdata_ami.sh")}"
+    key_name = "${var.key_name}"
+    root_block_device { delete_on_termination = true }
+    tags {
+        Name = "ami1"
     }
 }
