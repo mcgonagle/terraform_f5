@@ -87,3 +87,4 @@ tmsh create net vlan external interfaces add { 1.1 { untagged } }
 tmsh create net self 10.0.1.10 address 10.0.1.10/24 vlan external
 tmsh create net vlan internal interfaces add { 1.2 { untagged } }
 tmsh create net self 10.0.2.10 address 10.0.2.10/24 vlan internal
+tmsh modify sys ntp timezone America/New_York servers add { time.apple.com }
