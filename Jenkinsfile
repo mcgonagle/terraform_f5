@@ -5,5 +5,6 @@ node {
    }
    stage('Build') {
       sh '/usr/local/bin/terraform apply'
+
    }
 }
