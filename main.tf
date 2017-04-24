@@ -81,7 +81,7 @@ resource "aws_network_interface" "external" {
 }
 
 resource "aws_network_interface" "internal" {
-    depends_on = ["aws_network_interace.external"]
+    depends_on = ["aws_network_interface.external"]
     subnet_id = "${aws_subnet.internal.id}"
     private_ips = ["10.0.2.10", "10.0.2.183"]
     security_groups = ["${aws_security_group.allow_all.id}"]
